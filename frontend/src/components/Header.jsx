@@ -1,12 +1,17 @@
 import React from 'react'
-import { Button, Navbar, TextInput, Textarea } from "flowbite-react";
+import { Button, Navbar, TextInput, Avatar, Dropdown, } from "flowbite-react";
 import { Link, useLocation } from 'react-router-dom';
 import { AiOutlineSearch } from "react-icons/ai";
-import { FaMoon } from "react-icons/fa";
+import { FaMoon, FaSun } from "react-icons/fa";
+import { useSelector, useDispatch } from 'react-redux';
+import { toggleTheme } from '../redux/features/themeSlice'
 
 export default function Header() {
 
   const path = useLocation().pathname
+  const { currentUser } = useSelector(state => state.user)
+  const { theme } = useSelector(state => state.theme)
+  const dispatch = useDispatch()
 
   return (
     <Navbar className='border-b-2'>
@@ -24,20 +29,45 @@ export default function Header() {
         />
       </form>
 
-      <div className='flex items-center gap-x-2 md:order-1'>
+      <div className='flex items-center gap-x-2 md:order-2'>
         <Button
         className='w-12 h-9 hidden sm:inline-block'
         color="gray"
         pill
+        onClick={()=>dispatch(toggleTheme())}
         >
-          <FaMoon />
+        {
+          theme === "dark"? <FaSun /> : <FaMoon />
+        }
         </Button>
+        {
+          currentUser ? 
+          <div className="flex">
+          <Dropdown
+            arrowIcon={false}
+            inline
+            label={
+              <Avatar alt="User settings" img={currentUser.profilePicture} rounded />
+            }
+          >
+            <Dropdown.Header>
+              <span className="block text-sm">{ currentUser.username }</span>
+              <span className="block truncate text-sm font-medium">{ currentUser.email }</span>
+            </Dropdown.Header>
+            <Dropdown.Item>Dashboard</Dropdown.Item>
+            <Dropdown.Divider />
+            <Dropdown.Item>Sign out</Dropdown.Item>
+          </Dropdown>
+          <Navbar.Toggle className='mx-[1rem]' />
+        </div>
+        :
         <Link to="/signin">
           <Button
           outline gradientDuoTone="purpleToBlue"
-          >Sign In</Button>
+          >Sign In
+          </Button>
         </Link>
-        <Navbar.Toggle />
+        }
       </div>
 
       <Navbar.Collapse>
