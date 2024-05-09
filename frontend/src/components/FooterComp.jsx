@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 
 export default function FooterComp() {
   return (
-    <Footer container className="border border-[#0E7490] border-t-[5px] mt-[20rem]">
+    <Footer container className="border border-[#0E7490] border-t-[5px]">
       <div className="w-full">
         <div className="grid w-full justify-between sm:flex sm:justify-between md:flex md:grid-cols-1">
           <div className="mb-[3rem]">
