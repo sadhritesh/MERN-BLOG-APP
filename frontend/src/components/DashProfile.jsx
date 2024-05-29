@@ -1,14 +1,47 @@
-import React from "react";
-import { useSelector } from "react-redux";
-import { TextInput, Button } from "flowbite-react";
+import React, { useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { TextInput, Button, FileInput } from "flowbite-react";
+import { updateCurrentUser } from "../redux/features/userSlice";
 
 export default function DashProfile() {
   const { currentUser } = useSelector((state) => state.user);
+  const [ formData, setFormData ] = useState({})
+  const dispatch = useDispatch()
+
+  const handleChange = (e) => {
+    const { id, value, files } = e.target;
+    if (files) {
+      setFormData((prevData) => ({ ...prevData, [id]: files[0] }));
+    } else {
+      setFormData((prevData) => ({ ...prevData, [id]: value }));
+    }
+    console.log(id, value, files);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    const data = new FormData();
+    for (const key in formData) {
+      data.append(key, formData[key]);
+    }
+    try {
+      const response = await fetch("/api/v1/user/update-profile",{
+        method : "POST",
+        body : data
+      })
+      const result = await response.json()
+      console.log(result.data);
+      dispatch(updateCurrentUser(result.data))
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
+
 
   return (
     <div className="md:max-w-[50%] md:mx-auto mx-5">
       <h1 className="my-7 text-center font-semibold text-3xl">Profile</h1>
-      <form className="flex flex-col gap-5">
+      <form className="flex flex-col gap-5" onSubmit={(e)=>(handleSubmit(e))}>
         <div className="w-32 h-32 mx-auto border-8 border-[lightgray] rounded-full cursor-pointer">
           <img
             src={currentUser.profilePicture}
@@ -16,27 +49,33 @@ export default function DashProfile() {
             className="w-full h-full rounded-full"
           />
         </div>
+        <FileInput id="profilePicture" onChange={(e)=>(handleChange(e))} />
         <TextInput
           id="username"
           type="text"
           placeholder="username"
           defaultValue={currentUser.username}
+          onChange={(e)=>(handleChange(e))}
+          readOnly
         />
         <TextInput
           id="email"
           type="email"
           placeholder="email"
           defaultValue={currentUser.email}
+          onChange={(e)=>(handleChange(e))}
         />
         <TextInput 
         id="password" 
         type="password" 
-        placeholder="password" 
+        placeholder="new password" 
+        onChange={(e)=>(handleChange(e))}
         />
         <Button
         outline 
         gradientDuoTone="purpleToBlue"
         className="w-full"
+        type="submit"
         >
           update
         </Button>
