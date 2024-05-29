@@ -1,12 +1,16 @@
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { TextInput, Button, FileInput } from "flowbite-react";
 import { updateCurrentUser } from "../redux/features/userSlice";
+import { useToast } from "../hooks/useToast";
 
 export default function DashProfile() {
   const { currentUser } = useSelector((state) => state.user);
+  const { successToast, errorToast } = useToast()
   const [ formData, setFormData ] = useState({})
   const dispatch = useDispatch()
+  const navigate = useNavigate()
 
   const handleChange = (e) => {
     const { id, value, files } = e.target;
@@ -37,7 +41,24 @@ export default function DashProfile() {
     }
   }
 
+const handleDelete = async (e) => {
+  try {
+    const res = await fetch("/api/v1/user/delete-user",{
+      method: "DELETE"
+    })
+    const result = await res.json()
 
+    if (!result.success) {
+      throw new Error(result.message)
+    }
+    successToast(result.message)
+    navigate("/signin")
+    dispatch(updateCurrentUser({}))
+
+  } catch (error) {
+    errorToast(error.message)
+}
+}
   return (
     <div className="md:max-w-[50%] md:mx-auto mx-5">
       <h1 className="my-7 text-center font-semibold text-3xl">Profile</h1>
@@ -81,7 +102,7 @@ export default function DashProfile() {
         </Button>
       </form>
       <div className="flex flex-row justify-between my-5 text-red-600 ">
-        <span className="cursor-pointer">Delete Account</span>
+        <span className="cursor-pointer" onClick={ (e)=>{handleDelete(e)} }>Delete Account</span>
         <span className="cursor-pointer">Sign out</span>
       </div>
     </div>
