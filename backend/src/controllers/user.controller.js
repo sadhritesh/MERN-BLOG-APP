@@ -1,3 +1,4 @@
+import { json } from "express";
 import User from "../models/user.model.js";
 import ApiError from "../utils/ApiError.js";
 import ApiResponse from "../utils/ApiResponse.js";
@@ -46,6 +47,28 @@ const updateProfile = asyncHandler( async(req, res) => {
 
 })
 
+const deleteUser = asyncHandler (async (req, res) => {
+
+    const loggedInUser = req.user 
+    const userId = loggedInUser._id
+
+    const deletedUser = await User.findByIdAndDelete(userId)
+
+    if (!deletedUser) {
+        throw new ApiError (500, "Error occured, please try agin !")
+    }
+
+    return res
+    .json(
+        new ApiResponse (
+            200,
+            {},
+            "User deleted successfully !"
+        )
+    )
+})
+
 export {
-    updateProfile
+    updateProfile,
+    deleteUser
 }
