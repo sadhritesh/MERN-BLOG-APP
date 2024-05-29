@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { TextInput, Button, FileInput, Modal } from "flowbite-react";
-import { updateCurrentUser } from "../redux/features/userSlice";
+import { updateCurrentUser, signOutSuccess } from "../redux/features/userSlice";
 import { useToast } from "../hooks/useToast";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 
@@ -62,6 +62,26 @@ const handleDelete = async (e) => {
     errorToast(error.message)
 }
 }
+
+const handleSignOut = async () => {
+  try {
+    const response = await fetch("/api/v1/auth/signout", {
+      method : "POST"
+    })
+    const result = await response.json()
+    
+    if (!result.success) {
+      throw new Error("Error occured, please try again !")
+    }
+
+    successToast(result.message)
+    dispatch(signOutSuccess())
+    navigate("/signin")
+    
+  } catch (error) {
+    errorToast(error.message)
+  }
+}
   return (
     <div className="md:max-w-[50%] md:mx-auto mx-5">
       <h1 className="my-7 text-center font-semibold text-3xl">Profile</h1>
@@ -106,7 +126,7 @@ const handleDelete = async (e) => {
       </form>
       <div className="flex flex-row justify-between my-5 text-red-600 ">
         <span className="cursor-pointer" onClick={ (e)=>{setOpenModal(true)} }>Delete Account</span>
-        <span className="cursor-pointer">Sign out</span>
+        <span className="cursor-pointer" onClick={ (e)=>{handleSignOut()} }>Sign out</span>
       </div>
 
       <Modal show={openModal} size="md" onClose={ (e)=>{setOpenModal(false)} } popup>

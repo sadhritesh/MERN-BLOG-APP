@@ -5,6 +5,9 @@ import { AiOutlineSearch } from "react-icons/ai";
 import { FaMoon, FaSun } from "react-icons/fa";
 import { useSelector, useDispatch } from 'react-redux';
 import { toggleTheme } from '../redux/features/themeSlice'
+import { useNavigate } from 'react-router-dom';
+import { useToast } from '../hooks/useToast';
+import { signOutSuccess } from '../redux/features/userSlice';
 
 export default function Header() {
 
@@ -12,6 +15,28 @@ export default function Header() {
   const { currentUser } = useSelector(state => state.user)
   const { theme } = useSelector(state => state.theme)
   const dispatch = useDispatch()
+  const navigate = useNavigate()
+  const { successToast, errorToast } = useToast()
+
+  const handleSignOut = async () => {
+    try {
+      const response = await fetch("/api/v1/auth/signout", {
+        method : "POST"
+      })
+      const result = await response.json()
+      
+      if (!result.success) {
+        throw new Error("Error occured, please try again !")
+      }
+  
+      successToast(result.message)
+      dispatch(signOutSuccess())
+      navigate("/signin")
+      
+    } catch (error) {
+      errorToast(error.message)
+    }
+  }
 
   return (
     <Navbar className='border-b-2'>
@@ -58,7 +83,7 @@ export default function Header() {
               <Link to="/dashboard?tab=profile">Dashboard</Link>
             </Dropdown.Item>
             <Dropdown.Divider />
-            <Dropdown.Item>Sign out</Dropdown.Item>
+            <Dropdown.Item onClick={ (e)=>{handleSignOut()} }>Sign out</Dropdown.Item>
           </Dropdown>
           <Navbar.Toggle className='mx-[1rem]' />
         </div>
