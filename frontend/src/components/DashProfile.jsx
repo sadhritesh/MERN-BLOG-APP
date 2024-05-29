@@ -1,14 +1,17 @@
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { TextInput, Button, FileInput } from "flowbite-react";
+import { TextInput, Button, FileInput, Modal } from "flowbite-react";
 import { updateCurrentUser } from "../redux/features/userSlice";
 import { useToast } from "../hooks/useToast";
+import { HiOutlineExclamationCircle } from "react-icons/hi";
+
 
 export default function DashProfile() {
   const { currentUser } = useSelector((state) => state.user);
   const { successToast, errorToast } = useToast()
   const [ formData, setFormData ] = useState({})
+  const [ openModal, setOpenModal ] = useState(false)
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
@@ -102,9 +105,32 @@ const handleDelete = async (e) => {
         </Button>
       </form>
       <div className="flex flex-row justify-between my-5 text-red-600 ">
-        <span className="cursor-pointer" onClick={ (e)=>{handleDelete(e)} }>Delete Account</span>
+        <span className="cursor-pointer" onClick={ (e)=>{setOpenModal(true)} }>Delete Account</span>
         <span className="cursor-pointer">Sign out</span>
       </div>
+
+      <Modal show={openModal} size="md" onClose={ (e)=>{setOpenModal(false)} } popup>
+        < Modal.Header/>
+        <Modal.Body>
+          <div className="text-center">
+            <HiOutlineExclamationCircle className="mx-auto mb-4 h-14 w-14 text-gray-400 dark:text-gray-200" />
+            <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
+              Are you sure you want to delete this product?
+            </h3>
+            <div className="flex justify-center gap-4">
+              <Button color="failure" 
+              onClick={(e) => {
+                setOpenModal(false) 
+                handleDelete(e)}}>
+                {"Yes, I'm sure"}
+              </Button>
+              <Button color="gray" onClick={() => setOpenModal(false)}>
+                No, cancel
+              </Button>
+            </div>
+          </div>
+        </Modal.Body>
+      </Modal>
     </div>
   );
 }
