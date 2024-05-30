@@ -3,8 +3,7 @@ import { createSlice, current } from "@reduxjs/toolkit";
 const initialState = {
     currentUser : null,
     loading : false,
-    error : null,
-    success : null
+    error : null
 }
 
 export const userSlice = createSlice({
@@ -24,22 +23,31 @@ export const userSlice = createSlice({
             state.error = action.payload 
             state.loading = false
         },
-        setError : (state, action) => {
-            if (action.payload) {
-                state.error = action.payload
-            } else {
-                state.error = null
-            }
+        updateStart : (state, action) => {
+            state.error = null
+            state.loading = true
         },
-        setSuccess : (state, action) => {
-            if (action.payload) {
-                state.success = action.payload
-            } else {
-                state.success = null
-            }
-        },
-        updateCurrentUser : (state, action) => {
+        updateSuccuss : (state, action) => {
             state.currentUser = action.payload
+            state.loading = false 
+            state.error = null 
+        },
+        updateFailure : (state, action) => {
+            state.loading = false 
+            state.error = action.payload
+        },
+        deleteUserStart : (state, action) => {
+            state.loading = true 
+            state.error = null 
+        },
+        deleteUserSuccess : (state, action) => {
+            state.loading = false 
+            state.error = null 
+            state.currentUser = null 
+        },
+        deleteUserFailure : (state, action) => {
+            state.error = action.payload
+            state.loading = false
         },
         signOutSuccess : (state, action) => {
             state.currentUser = null 
@@ -53,9 +61,12 @@ export const {
     signInStart, 
     signInSuccess, 
     signInFailure, 
-    setError, 
-    setSuccess,
-    updateCurrentUser,
+    updateStart,
+    updateSuccuss,
+    updateFailure,
+    deleteUserStart,
+    deleteUserFailure,
+    deleteUserSuccess,
     signOutSuccess 
 } = userSlice.actions;
 

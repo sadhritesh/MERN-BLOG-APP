@@ -2,7 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { Button, Label, TextInput, Spinner } from "flowbite-react";
 import { useNavigate, Link } from "react-router-dom";
 import { useToast } from '../hooks/useToast';
-import { signInStart, signInSuccess, signInFailure, setError, setSuccess } from "../redux/features/userSlice.js";
+import { 
+  signInStart, 
+  signInSuccess, 
+  signInFailure
+} from "../redux/features/userSlice.js";
 import { useSelector, useDispatch } from 'react-redux';
 
 export default function SignIn() {
@@ -12,21 +16,6 @@ export default function SignIn() {
   const navigate = useNavigate()
   const { currentUser, error, loading, success } = useSelector( state => state.user )
   const dispatch = useDispatch()
-
-
-  useEffect(() => {
-    if (error) {
-      errorToast(error)
-      dispatch(setError())
-    }  
-  }, [error])
-
-  useEffect(() => {
-    if (success) {
-      successToast(success)
-      dispatch(setSuccess())
-    }
-  }, [success])
 
   const handleChange = (e) => {
       setFormData({...formData, [e.target.id]: e.target.value.trim()})
@@ -55,12 +44,15 @@ export default function SignIn() {
       const jsonResponse = await response.json()
 
       if (jsonResponse.success === false) {
+        dispatch(signInFailure(jsonResponse.message))
         throw new Error(jsonResponse.message)
       }
+      console.log(jsonResponse);
       dispatch(signInSuccess(jsonResponse.data._doc))
-      dispatch(setSuccess(jsonResponse.message))
+      successToast(jsonResponse.message)
       navigate('/')
     } catch (err) {
+      errorToast(err.message)
       dispatch(signInFailure(err.message))
     }
   }
