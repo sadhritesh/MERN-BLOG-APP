@@ -100,7 +100,6 @@ const signIn = asyncHandler (async (req, res, next) => {
     const { accessToken, refershToken } = await generateAccessAndRefreshToken(user._id)
 
     const loggedInUser = await User.findById(user._id).select("-password -refreshToken")
-
     return res 
     .status(200)
     .cookie("accessToken", accessToken, cookieOptions)
