@@ -1,14 +1,21 @@
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import { TextInput, Button, FileInput, Modal } from "flowbite-react";
-import { updateCurrentUser, signOutSuccess } from "../redux/features/userSlice";
+import { Link, useNavigate } from "react-router-dom";
+import { TextInput, Button, FileInput, Modal, Spinner } from "flowbite-react";
+import { 
+  updateStart,
+  updateSuccuss,
+  updateFailure,
+  deleteUserStart,
+  deleteUserFailure,
+  deleteUserSuccess,
+  signOutSuccess } from "../redux/features/userSlice";
 import { useToast } from "../hooks/useToast";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 
 
 export default function DashProfile() {
-  const { currentUser } = useSelector((state) => state.user);
+  const { currentUser, error, loading } = useSelector((state) => state.user);
   const { successToast, errorToast } = useToast()
   const [ formData, setFormData ] = useState({})
   const [ openModal, setOpenModal ] = useState(false)
@@ -32,33 +39,45 @@ export default function DashProfile() {
       data.append(key, formData[key]);
     }
     try {
+      dispatch(updateStart())
       const response = await fetch("/api/v1/user/update-profile",{
         method : "POST",
         body : data
       })
       const result = await response.json()
+  
+      if (!result.success) {
+        dispatch(updateFailure(result.message))
+        throw new Error(result.message)
+      }
       console.log(result.data);
-      dispatch(updateCurrentUser(result.data))
+      dispatch(updateSuccuss(result.data))
+      successToast(result.message)
     } catch (error) {
       console.log(error.message);
+      errorToast(error.message)
+      dispatch(updateFailure(error.message))
     }
   }
 
 const handleDelete = async (e) => {
   try {
+    dispatch(deleteUserStart())
     const res = await fetch("/api/v1/user/delete-user",{
       method: "DELETE"
     })
     const result = await res.json()
-
+  
     if (!result.success) {
+      dispatch(deleteUserFailure(result.message))
       throw new Error(result.message)
     }
     successToast(result.message)
     navigate("/signin")
-    dispatch(updateCurrentUser({}))
+    dispatch(deleteUserSuccess())
 
   } catch (error) {
+    dispatch(deleteUserFailure())
     errorToast(error.message)
 }
 }
@@ -120,9 +139,24 @@ const handleSignOut = async () => {
         gradientDuoTone="purpleToBlue"
         className="w-full"
         type="submit"
+        disabled={loading}
         >
-          update
+          {
+            loading ? <Spinner aria-label="Small spinner example" size="sm" /> : "update"
+          }
         </Button>
+        {
+          currentUser.isAdmin &&         
+          <Link to="/create-post">
+            <Button
+            gradientDuoTone="purpleToBlue"
+            className="w-full"
+            type="button"
+            >
+              Create a post
+            </Button>
+          </Link>
+        }
       </form>
       <div className="flex flex-row justify-between my-5 text-red-600 ">
         <span className="cursor-pointer" onClick={ (e)=>{setOpenModal(true)} }>Delete Account</span>

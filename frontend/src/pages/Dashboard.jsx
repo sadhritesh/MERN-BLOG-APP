@@ -1,6 +1,6 @@
 import { React, useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
-import { DashProfile, DashSideBar } from '../components'
+import { DashProfile, DashSideBar, DashPosts } from '../components'
 
 export default function Dashboard() {
 
@@ -22,9 +22,10 @@ export default function Dashboard() {
       <div className='md:min-h-screen'>
         <DashSideBar />
       </div>
-      <div className='border border-white w-full'>
-        <DashProfile />
-      </div>
+      {/* Profile */}
+      {tab === "profile" && <DashProfile/>}
+      {/* Posts */}
+      {tab === "posts" && <DashPosts/>}
     </div>
   )
 }

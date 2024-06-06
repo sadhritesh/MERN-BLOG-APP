@@ -4,6 +4,7 @@ import Header from "./Header";
 import ProtectedRoute from "./ProtectedRoute"
 import DashSideBar from "./DashSideBar";
 import DashProfile from "./DashProfile"
+import DashPosts from "./DashPosts";
 
 export {
     FooterComp,
@@ -11,5 +12,6 @@ export {
     Header,
     ProtectedRoute,
     DashSideBar,
-    DashProfile
+    DashProfile,
+    DashPosts
 }

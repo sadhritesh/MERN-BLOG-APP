@@ -1,5 +1,15 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom"
-import { Home, SignIn, SignUp, Projects, Dashboard, About, Error } from "./pages"
+import { 
+  Home, 
+  SignIn, 
+  SignUp, 
+  Projects, 
+  Dashboard, 
+  About, 
+  Error, 
+  AdminProtectedRoute,
+  CreatePost
+} from "./pages"
 import { FooterComp, Header, ProtectedRoute } from "./components";
 import { ToastContainer } from 'react-toastify';
 function App() {
@@ -15,6 +25,9 @@ function App() {
         <Route path="/signup" element={<SignUp />} />
         <Route element={<ProtectedRoute />}>
           <Route path="/dashboard" element={<Dashboard />} />
+        </Route>
+        <Route element={<AdminProtectedRoute />}>
+          <Route path="/create-post" element={<CreatePost />} />
         </Route>
         <Route path="/*" element={<Error />} />
       </Routes>

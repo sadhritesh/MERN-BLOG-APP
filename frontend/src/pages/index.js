@@ -5,6 +5,8 @@ import Projects from "./Projects.jsx";
 import SignIn from "./SignIn.jsx";
 import SignUp from "./SignUp.jsx";
 import Error from "./Error.jsx";
+import AdminProtectedRoute from "./AdminProtectedRoute.jsx";
+import CreatePost from "./CreatePost.jsx";
 
 export {
     Home,
@@ -13,5 +15,7 @@ export {
     Projects,
     SignIn,
     SignUp,
-    Error
+    Error,
+    AdminProtectedRoute,
+    CreatePost
 }
