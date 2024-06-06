@@ -102,9 +102,9 @@ const handleSignOut = async () => {
   }
 }
   return (
-    <div className="md:max-w-[50%] md:mx-auto mx-5">
+    <div className="md:mx-auto mx-5">
       <h1 className="my-7 text-center font-semibold text-3xl">Profile</h1>
-      <form className="flex flex-col gap-5" onSubmit={(e)=>(handleSubmit(e))}>
+      <form className="flex flex-col gap-5 lg:w-[40rem] md:w-[30rem]" onSubmit={(e)=>(handleSubmit(e))}>
         <div className="w-32 h-32 mx-auto border-8 border-[lightgray] rounded-full cursor-pointer">
           <img
             src={currentUser.profilePicture}
