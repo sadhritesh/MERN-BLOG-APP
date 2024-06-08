@@ -6,7 +6,12 @@ import 'react-quill/dist/quill.snow.css';
 
 export default function CreatePost() {
 
-  const [ formData, setFormData ] = useState({})
+  const [ formData, setFormData ] = useState({
+    title: '',
+    category: '',
+    content: '',
+    blogPost: ''
+  })
   const { successToast, errorToast } = useToast()
   const [ loading, setLoading ] = useState(false)
 
@@ -23,11 +28,11 @@ export default function CreatePost() {
   const handleSubmit = async (e) => {
     e.preventDefault()
 
-    // if (loading) {
-    //   return 
-    // }
+    if (loading) {
+      return 
+    }
 
-    
+    setLoading(true)
     const data = new FormData()
     
     for (const key in formData) {
@@ -46,6 +51,12 @@ export default function CreatePost() {
       }
       console.log(result.data);
       setLoading(false)
+      setFormData({
+        title: '',
+        category: '',
+        content: '',
+        blogPost: ''
+      })
       successToast(result.message)
     } catch (error) {
       setLoading(false)
@@ -70,14 +81,17 @@ export default function CreatePost() {
             placeholder='Title' 
             className='flex-1'
             id='title'
+            value={formData.title}
             onChange={ (e)=>handleChange(e) }
             required
           />
-          <Select id='category' onChange={ (e)=>handleChange(e) }>
+          <Select id='category' onChange={ (e)=>handleChange(e) } value={formData.category}>
               <option value="uncategorized">Select a category</option>
               <option value="javascript">Javascript</option>
               <option value="python">Python</option>
               <option value="nodejs">Nodejs</option>
+              <option value="reactjs">Reactjs</option>
+              <option value="nextjs">Nextjs</option>
           </Select>
         </div>
         <div 
@@ -87,7 +101,7 @@ export default function CreatePost() {
            type="file"
            accept='image/*'
            id='blogPost'
-           onChange={ (e)=>handleChange(e) }
+           onChange={ (e)=> handleChange(e) }
           />
           {/* <Button
           gradientDuoTone="purpleToBlue"
@@ -101,11 +115,10 @@ export default function CreatePost() {
         <ReactQuill
         theme='snow'
         className='h-72 mb-10'
-        
-        onChange={ (value)=>{
-          setFormData({...formData, "content": value})
-        }
-      }
+        value={formData.content}
+        onChange={(value) => {
+          setFormData((prevData) => ({ ...prevData, content: value }));
+        }}
       required="true"
         />
         <Button

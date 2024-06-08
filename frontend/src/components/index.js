@@ -6,6 +6,7 @@ import DashSideBar from "./DashSideBar";
 import DashProfile from "./DashProfile"
 import DashPosts from "./DashPosts";
 import DashUsers from "./DashUsers";
+import PostCard from "./PostCard";
 
 export {
     FooterComp,
@@ -15,5 +16,6 @@ export {
     DashSideBar,
     DashProfile,
     DashPosts,
-    DashUsers
+    DashUsers,
+    PostCard
 }
