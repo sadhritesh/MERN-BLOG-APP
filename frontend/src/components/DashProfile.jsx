@@ -63,7 +63,7 @@ export default function DashProfile() {
 const handleDelete = async (e) => {
   try {
     dispatch(deleteUserStart())
-    const res = await fetch("/api/v1/user/delete-user",{
+    const res = await fetch("/api/v1/user/delete-profile",{
       method: "DELETE"
     })
     const result = await res.json()

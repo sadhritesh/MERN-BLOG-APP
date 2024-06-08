@@ -1,8 +1,9 @@
+import { response } from "express";
 import Post from "../models/post.model.js";
 import ApiError from "../utils/ApiError.js";
 import ApiResponse from "../utils/ApiResponse.js";
 import asyncHandler from "../utils/asycHandler.js";
-import { uploadFileOnCloudinary }  from "../utils/cloudinary.js"
+import { uploadFileOnCloudinary, deleteFileFromCloudinary }  from "../utils/cloudinary.js"
 
 
 const createPost = asyncHandler( async (req, res) => {
@@ -99,7 +100,131 @@ const getPosts = asyncHandler (async (req, res) => {
         )
     )
 })
+
+const deletePost = asyncHandler (async (req, res) => {
+
+    if (!req.user.isAdmin || req.user._id != req.params.userId) {
+        throw new ApiError (
+            403,
+            "You are not allowed"
+        )
+    }
+
+    const post = await Post.findById(req.params.postId)
+
+    if (!post) {
+        throw new ApiError (404, "Post not found")
+    }
+
+    await deleteFileFromCloudinary(post.blogPost)
+
+    const deletedPost = await Post.findByIdAndDelete(req.params.postId)
+
+    if (!deletedPost) {
+        throw new ApiError (
+            500, "Please try again"
+        )
+    }
+
+    return res 
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            {},
+            "Post deleted successfully"
+        )
+    )
+})
+
+const updatePost = asyncHandler (async (req, res) => {
+
+    if (!req.user.isAdmin || req.user._id != req.params.userId) {
+        throw new ApiError(403, "You can't edit it")
+    }    
+
+    const oldPost = await Post.findById(req.params.postId)
+
+    const updatedPost = await Post.findByIdAndUpdate(
+        req.params.postId,
+        {
+            $set : {
+                title: req.body.title || oldPost.title,
+                content: req.body.content || oldPost.content,
+                category: req.body.category || oldPost.category,
+            }
+        }, 
+        { new:true }
+    )
+
+    if (!updatedPost) {
+        throw new ApiError(500, "Post not updated, please try again")
+    }
+
+    return res 
+    .status(200)
+    .json(
+        new ApiResponse (
+            200,
+            updatedPost,
+            "Post updated successfully"
+        )
+    )
+})
+
+const updatePostImage = asyncHandler (async (req, res) => {
+    //get the post id and user id 
+    //validate the user 
+    //get the image's required details
+    //updated the database 
+    
+    if (!req.user.isAdmin || req.user._id != req.params.userId) {
+        throw new ApiError(403, "You can't edit it")
+    }    
+
+    const oldPost = await Post.findById(req.params.postId)
+
+    const fileLocalPath = req?.file?.path
+
+    let response = ""
+    if (fileLocalPath) {
+        response = await  uploadFileOnCloudinary(fileLocalPath)
+        await deleteFileFromCloudinary(oldPost.blogPost)
+    }
+
+    const updatedPost = await Post.findByIdAndUpdate(
+        req.params.postId,
+        {
+            $set : {
+                title: req.body.title || oldPost.title,
+                content: req.body.content || oldPost.content,
+                category: req.body.category || oldPost.category,
+                blogPost: response?.url || oldPost.blogPost
+            }
+        }, 
+        { new:true }
+    )
+
+    if (!updatedPost) {
+        throw new ApiError(500, "Post not updated, please try again")
+    }
+
+    return res 
+    .status(200)
+    .json(
+        new ApiResponse (
+            200,
+            updatedPost,
+            "Image updated successfully"
+        )
+    )
+    
+})
+
 export {
     createPost,
-    getPosts
+    getPosts,
+    deletePost,
+    updatePost,
+    updatePostImage
 }

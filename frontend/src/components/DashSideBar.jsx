@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { Sidebar } from "flowbite-react";
-import { HiUser, HiArrowSmRight, HiDocument } from "react-icons/hi";
+import { HiUser, HiArrowSmRight, HiDocument, HiOutlineUserGroup } from "react-icons/hi";
 import { signOutSuccess } from '../redux/features/userSlice';
 import { useDispatch } from 'react-redux';
 import { useToast } from '../hooks/useToast';
@@ -70,7 +70,17 @@ export default function DashSideBar() {
                   </Sidebar.Item>
               </Link>
             )}
-            
+            {currentUser.isAdmin && (
+              <Link to='/dashboard?tab=users'>
+                <Sidebar.Item
+                  active={tab === 'users'}
+                  icon={HiOutlineUserGroup}
+                  as='div'
+                >
+                  Users
+                </Sidebar.Item>
+              </Link>
+          )}
             <Sidebar.Item 
               icon={HiArrowSmRight} 
               onClick={ (e)=>{handleSignOut()} } 

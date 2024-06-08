@@ -7,6 +7,7 @@ import SignUp from "./SignUp.jsx";
 import Error from "./Error.jsx";
 import AdminProtectedRoute from "./AdminProtectedRoute.jsx";
 import CreatePost from "./CreatePost.jsx";
+import UpdatePost from "./UpdatePost.jsx"
 
 export {
     Home,
@@ -17,5 +18,6 @@ export {
     SignUp,
     Error,
     AdminProtectedRoute,
-    CreatePost
+    CreatePost,
+    UpdatePost
 }

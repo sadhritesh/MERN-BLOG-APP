@@ -8,7 +8,8 @@ import {
   About, 
   Error, 
   AdminProtectedRoute,
-  CreatePost
+  CreatePost,
+  UpdatePost
 } from "./pages"
 import { FooterComp, Header, ProtectedRoute } from "./components";
 import { ToastContainer } from 'react-toastify';
@@ -28,6 +29,7 @@ function App() {
         </Route>
         <Route element={<AdminProtectedRoute />}>
           <Route path="/create-post" element={<CreatePost />} />
+          <Route path="/update-post/:postId" element={<UpdatePost />} />
         </Route>
         <Route path="/*" element={<Error />} />
       </Routes>
