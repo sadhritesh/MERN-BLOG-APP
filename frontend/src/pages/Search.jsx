@@ -6,7 +6,7 @@ import {PostCard} from '../components';
 export default function Search() {
   const [sidebarData, setSidebarData] = useState({
     searchTerm: '',
-    sort: 'desc',
+    sort: 'asc',
     category: 'uncategorized',
   });
 
@@ -81,25 +81,38 @@ export default function Search() {
   };
 
   const handleShowMore = async () => {
+    console.log('hii');
     const numberOfPosts = posts.length;
     const startIndex = numberOfPosts;
     const urlParams = new URLSearchParams(location.search);
     urlParams.set('startIndex', startIndex);
     const searchQuery = urlParams.toString();
-    const res = await fetch(`/api/post/getposts?${searchQuery}`);
-    if (!res.ok) {
-      return;
+    const res = await fetch(`/api/v1/post/getposts?${searchQuery}`);
+    const result = await res.json()
+
+    if (!result.success) {
+      return
     }
-    if (res.ok) {
-      const data = await res.json();
-      setPosts([...posts, ...data.posts]);
-      if (data.posts.length === 9) {
-        setShowMore(true);
-      } else {
-        setShowMore(false);
-      }
+    console.log(result);
+    setPosts([...posts, ...result.data.posts]);
+    if (result.data.posts.length === 9) {
+      setShowMore(true);
+    } else {
+      setShowMore(false);
     }
-  };
+    // if (!res.ok) {
+    //   return;
+    // }
+    // if (res.ok) {
+    //   const data = await res.json();
+    //   setPosts([...posts, ...data.posts]);
+    //   if (data.posts.length === 9) {
+    //     setShowMore(true);
+    //   } else {
+    //     setShowMore(false);
+    //   }
+    }
+  ;
 
   return (
     <div className='flex flex-col md:flex-row'>
@@ -156,7 +169,7 @@ export default function Search() {
             posts.map((post) => <PostCard key={post._id} post={post} />)}
           {showMore && (
             <button
-              onClick={handleShowMore}
+              onClick={()=>handleShowMore()}
               className='text-teal-500 text-lg hover:underline p-7 w-full'
             >
               Show More

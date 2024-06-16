@@ -1,4 +1,4 @@
-import { response } from "express";
+
 import Post from "../models/post.model.js";
 import ApiError from "../utils/ApiError.js";
 import ApiResponse from "../utils/ApiResponse.js";
@@ -58,7 +58,7 @@ const getPosts = asyncHandler (async (req, res) => {
 
     const startIndex = parseInt(req.query.startIndex)||0;
     const limit = parseInt(req.query.limit)||9;
-    const sortDirection = req.query.order === "asc" ? 1 : -1;
+    const sortDirection = req.query.sort === "asc" ? 1 : -1;
     const posts = await Post.find({
         ...(req.query.userId && { userId: req.query.userId }),
         ...(req.query.category && { category: req.query.category }),
@@ -75,6 +75,8 @@ const getPosts = asyncHandler (async (req, res) => {
     .skip(startIndex)
     .limit(limit)
 
+    console.log(sortDirection);
+    console.log(req.query.sort);
     const totalPosts = await Post.countDocuments();
 
     const now = new Date()
